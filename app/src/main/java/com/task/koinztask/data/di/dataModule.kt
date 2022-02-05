@@ -5,7 +5,9 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.task.koinztask.data.local.AppDatabase
+import com.task.koinztask.data.local.PhotosCache
 import com.task.koinztask.data.remote.PhotosApi
+import com.task.koinztask.data.repos.GetPhotosRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidContext
@@ -23,6 +25,9 @@ val dataModule = module {
     single { provideRoom(androidContext()) }
     single { providePhotosApi(get()) }
     single (named("BaseUrl")) { "https://www.flickr.com/" }
+
+    single { PhotosCache(appDatabase = get()) }
+    single { GetPhotosRepository(photosApi = get(), photosCache = get()) }
 }
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
     val loggingInterceptor = HttpLoggingInterceptor()

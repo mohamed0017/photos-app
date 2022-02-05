@@ -2,12 +2,12 @@ package com.task.koinztask.data.remote
 
 data class PhotosApiResponse(
     val stat: String?,
-    val photos: PhotosData?,
+    val photos: PhotosDataResponse?,
     val message: String?,
     val code: String?
 )
 
-data class PhotosData(
+data class PhotosDataResponse(
     val page : Int?,
     val pages : Int?,
     val perpage : Int?,
@@ -16,7 +16,7 @@ data class PhotosData(
 )
 
 data class Photo(
-    val id : String?,
+    val id : String,
     val owner : String?,
     val secret : String?,
     val server : String?,
