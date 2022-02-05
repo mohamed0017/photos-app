@@ -27,7 +27,7 @@ val dataModule = module {
     single (named("BaseUrl")) { "https://www.flickr.com/" }
 
     single { PhotosCache(appDatabase = get()) }
-    single { GetPhotosRepository(photosApi = get(), photosCache = get()) }
+    single { GetPhotosRepository(photosApi = get(), appDatabase = get(), photoMapper = get()) }
 }
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
     val loggingInterceptor = HttpLoggingInterceptor()

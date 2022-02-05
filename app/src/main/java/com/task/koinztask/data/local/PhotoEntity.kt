@@ -16,3 +16,7 @@ data class PhotoEntity(
     @ColumnInfo(name = "isfriend") val isFriend: Int?,
     @ColumnInfo(name = "isfamily") val isFamily: Int?,
 )
+
+
+@Entity
+data class RemoteKeys(@PrimaryKey val repoId: String, val prevKey: Int?, val nextKey: Int?)

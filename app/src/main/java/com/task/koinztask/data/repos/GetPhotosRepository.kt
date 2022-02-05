@@ -1,44 +1,33 @@
 package com.task.koinztask.data.repos
 
-import com.task.koinztask.data.local.PhotosCache
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.*
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.task.koinztask.data.local.AppDatabase
+import com.task.koinztask.data.local.PhotoEntity
+import com.task.koinztask.data.mapper.PhotoMapper
 import com.task.koinztask.data.remote.PhotosApi
-import com.task.koinztask.data.remote.PhotosApiResponse
-import com.task.koinztask.data.remote.PhotosDataResponse
-import retrofit2.Response
+import kotlinx.coroutines.flow.Flow
 
 interface PhotosDataSource {
-    suspend fun getPhotos(page: String): Result<PhotosDataResponse>
+    fun loadPhotos(): Flow<PagingData<PhotoEntity>>
 }
 
-class GetPhotosRepository(private val photosApi: PhotosApi, private val photosCache: PhotosCache) :
-    PhotosDataSource {
+class GetPhotosRepository(
+    private val photosApi: PhotosApi,
+    private val appDatabase: AppDatabase,
+    private val photoMapper: PhotoMapper
+) : PhotosDataSource {
 
-    override suspend fun getPhotos(page: String): Result<PhotosDataResponse> {
-        return handleApiResponse { photosApi.getPhotos(page) }
+    @ExperimentalPagingApi
+    override fun loadPhotos(): Flow<PagingData<PhotoEntity>> {
+        val pagingSourceFactory = { appDatabase.photosDao().getAll() }
+
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = pagingSourceFactory,
+            remoteMediator = PhotosMediator(photosApi, appDatabase, photoMapper)
+        ).flow
     }
-
-    private suspend fun handleApiResponse(call: suspend () -> Response<PhotosApiResponse>): Result<PhotosDataResponse> {
-
-        val response = call.invoke()
-        return if (response.isSuccessful) {
-            if (response.body()?.stat == "ok") {
-
-                response.body()?.photos?.let { photosCache.savePhotos(it) }
-
-                Result.Success(response.body()?.photos)
-            } else
-                Result.Error(ServerError(response.body()?.message))
-        } else
-            Result.Error(ServerError())
-    }
-}
-
-
-/**
- * A generic class that holds a value with its loading status.
- * @param <T>
- */
-sealed class Result<out R> {
-    data class Success<out T>(val data: T?) : Result<T>()
-    data class Error<out T>(val error: Throwable) : Result<T>()
 }

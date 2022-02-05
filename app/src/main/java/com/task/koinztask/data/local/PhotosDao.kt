@@ -1,11 +1,12 @@
 package com.task.koinztask.data.local
 
+import androidx.paging.PagingSource
 import androidx.room.*
 
 @Dao
 interface PhotosDao {
     @Query("SELECT * FROM photos")
-    suspend fun getAll(): List<PhotoEntity>
+    fun getAll() : PagingSource<Int, PhotoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll( photos: List<PhotoEntity>)

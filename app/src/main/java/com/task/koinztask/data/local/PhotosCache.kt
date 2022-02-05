@@ -4,6 +4,7 @@ import com.task.koinztask.data.remote.PhotosDataResponse
 
 interface PhotosCacheDataSource {
     suspend fun savePhotos(photosApiResponse: PhotosDataResponse)
+    suspend fun deleteAll()
 }
 
 class PhotosCache(private val appDatabase: AppDatabase) : PhotosCacheDataSource {
@@ -22,6 +23,10 @@ class PhotosCache(private val appDatabase: AppDatabase) : PhotosCacheDataSource 
                 owner = it.owner
             )
         }!!)
+    }
+
+    override suspend fun deleteAll() {
+        appDatabase.photosDao().deleteAll()
     }
 
 
