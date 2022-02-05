@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.task.koinztask.data.local.AppDatabase
 import com.task.koinztask.data.local.PhotosCache
+import com.task.koinztask.data.mapper.PhotoMapper
 import com.task.koinztask.data.remote.PhotosApi
 import com.task.koinztask.data.repos.GetPhotosRepository
 import okhttp3.OkHttpClient
@@ -26,8 +27,9 @@ val dataModule = module {
     single { providePhotosApi(get()) }
     single (named("BaseUrl")) { "https://www.flickr.com/" }
 
-    single { PhotosCache(appDatabase = get()) }
     single { GetPhotosRepository(photosApi = get(), appDatabase = get(), photoMapper = get()) }
+
+    single { PhotoMapper() }
 }
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
     val loggingInterceptor = HttpLoggingInterceptor()
@@ -57,6 +59,6 @@ private fun provideRetrofit(baseUrl: String, gson: Gson, okHttpClient: OkHttpCli
 private fun providePhotosApi(retrofit: Retrofit) = retrofit.create(PhotosApi::class.java)
 
 private fun provideRoom(context: Context) =
-    Room.databaseBuilder(context, AppDatabase::class.java, "signify")
-        .fallbackToDestructiveMigration()
+    Room.databaseBuilder(context, AppDatabase::class.java, "app-database")
         .build()
+

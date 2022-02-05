@@ -5,7 +5,6 @@ import com.task.koinztask.data.local.AppDatabase
 import com.task.koinztask.data.local.PhotoEntity
 import com.task.koinztask.data.local.RemoteKeys
 import com.task.koinztask.data.mapper.PhotoMapper
-import com.task.koinztask.data.remote.Photo
 import com.task.koinztask.data.remote.PhotosApi
 import retrofit2.HttpException
 import java.io.IOException
@@ -13,13 +12,12 @@ import java.io.InvalidObjectException
 
 const val DEFAULT_PAGE_INDEX = 1
 
-@ExperimentalPagingApi
+@OptIn(ExperimentalPagingApi::class)
 class PhotosMediator(
     private val photosService: PhotosApi,
     private val appDatabase: AppDatabase,
     private val photoMapper: PhotoMapper
 ) : RemoteMediator<Int, PhotoEntity>() {
-
 
     override suspend fun load(
         loadType: LoadType, state: PagingState<Int, PhotoEntity>

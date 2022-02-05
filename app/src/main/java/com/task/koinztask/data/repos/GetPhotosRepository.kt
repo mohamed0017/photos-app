@@ -20,7 +20,7 @@ class GetPhotosRepository(
     private val photoMapper: PhotoMapper
 ) : PhotosDataSource {
 
-    @ExperimentalPagingApi
+    @OptIn(ExperimentalPagingApi::class)
     override fun loadPhotos(): Flow<PagingData<PhotoEntity>> {
         val pagingSourceFactory = { appDatabase.photosDao().getAll() }
 
