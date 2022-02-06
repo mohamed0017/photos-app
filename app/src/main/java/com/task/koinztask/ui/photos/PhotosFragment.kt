@@ -6,9 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.ObservableChar
+import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.map
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.task.koinztask.R
+import com.task.koinztask.ui.photos.adapter.PhotosAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PhotosFragment : Fragment() {
@@ -29,6 +34,23 @@ class PhotosFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        val photosAdapter = PhotosAdapter()
+
+        val rvPhotos = view?.findViewById<RecyclerView>(R.id.rvPhotos)
+        rvPhotos?.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = photosAdapter
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            viewModel.photosLiveData.observe(viewLifecycleOwner, {
+                photosAdapter.submitData(lifecycle, it.map { PhotoVM() })
+            })
+        }
     }
 
 }
+
+data class PhotoVM(
+    val imageUrl: String? = null
+)
