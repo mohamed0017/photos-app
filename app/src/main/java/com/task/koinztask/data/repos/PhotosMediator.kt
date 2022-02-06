@@ -6,6 +6,10 @@ import com.task.koinztask.data.local.PhotoEntity
 import com.task.koinztask.data.local.RemoteKeys
 import com.task.koinztask.data.mapper.PhotoMapper
 import com.task.koinztask.data.remote.PhotosApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
@@ -40,6 +44,7 @@ class PhotosMediator(
                 appDatabase.remoteKeysDao().clearRemoteKeys()
                 appDatabase.photosDao().deleteAll()
             }
+
             val prevKey = if (page == DEFAULT_PAGE_INDEX) null else page - 1
             val nextKey = if (isEndOfList == true) null else page + 1
             val keys = response.body()?.photos?.photo?.map {
