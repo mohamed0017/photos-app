@@ -44,13 +44,9 @@ class PhotosFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.photosLiveData.observe(viewLifecycleOwner, {
-                photosAdapter.submitData(lifecycle, it.map { PhotoVM() })
+                photosAdapter.submitData(lifecycle, it )
             })
         }
     }
 
 }
-
-data class PhotoVM(
-    val imageUrl: String? = null
-)

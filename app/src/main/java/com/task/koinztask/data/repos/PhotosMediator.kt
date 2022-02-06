@@ -92,7 +92,7 @@ class PhotosMediator(
         return state.pages
             .lastOrNull { it.data.isNotEmpty() }
             ?.data?.lastOrNull()
-            ?.let { doggo -> appDatabase.remoteKeysDao().remoteKeysDoggoId(doggo.id) }
+            ?.let { photo -> appDatabase.remoteKeysDao().remoteKeysPhotoId(photo.id) }
     }
 
     /**
@@ -100,9 +100,9 @@ class PhotosMediator(
      */
     private suspend fun getFirstRemoteKey(state: PagingState<Int, PhotoEntity>): RemoteKeys? {
         return state.pages
-            .firstOrNull() { it.data.isNotEmpty() }
+            .firstOrNull { it.data.isNotEmpty() }
             ?.data?.firstOrNull()
-            ?.let { doggo -> appDatabase.remoteKeysDao().remoteKeysDoggoId(doggo.id) }
+            ?.let { photo -> appDatabase.remoteKeysDao().remoteKeysPhotoId(photo.id) }
     }
 
     /**
@@ -111,7 +111,7 @@ class PhotosMediator(
     private suspend fun getClosestRemoteKey(state: PagingState<Int, PhotoEntity>): RemoteKeys? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { repoId ->
-                appDatabase.remoteKeysDao().remoteKeysDoggoId(repoId)
+                appDatabase.remoteKeysDao().remoteKeysPhotoId(repoId)
             }
         }
     }
