@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Koinz task</string>
+    <string name="retry">retry</string>
 </resources>

@@ -10,45 +10,90 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.task.koinztask.R
+import com.task.koinztask.databinding.AdBannerItemBinding
 import com.task.koinztask.ui.photos.PhotoVM
+import com.task.koinztask.ui.photos.UiModel
 
 @BindingAdapter("imageUrl")
 fun setImageUrl(view: ImageView, url: String?) {
-    Glide.with(view.context).load(url).placeholder(R.drawable.ic_launcher_background).into(view)
+    Glide.with(view.context).load(url).placeholder(R.drawable.placeholder).into(view)
 }
 
-class PhotosAdapter constructor() :
-    PagingDataAdapter<PhotoVM, PhotosAdapter.CharacterViewHolder>(CharacterComparator) {
+class PhotosAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiModelComparator) {
     var characterClickListener: PhotoClickListener? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        CharacterViewHolder(
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ) = when (viewType) {
+        R.layout.photo_item -> PhotoViewHolder(
             PhotoItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
-
-    override fun onBindViewHolder(holder: CharacterViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it) }
+        else -> AdBannerViewHolder(
+            AdBannerItemBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        )
     }
 
-    inner class CharacterViewHolder(private val binding: PhotoItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(item: PhotoVM) = with(binding) {
-            photo = item
+    override fun getItemViewType(position: Int): Int {
+        return when (peek(position)) {
+            is UiModel.PhotoModel -> R.layout.photo_item
+            is UiModel.AdBannerModel -> R.layout.ad_banner_item
+            null -> throw IllegalStateException("Unknown view")
         }
     }
 
-    object CharacterComparator : DiffUtil.ItemCallback<PhotoVM>() {
-        override fun areItemsTheSame(oldItem: PhotoVM, newItem: PhotoVM) =
-            oldItem.imageUrl == newItem.imageUrl
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int
+    ) {
+        val item = getItem(position)
+        if (holder is PhotoViewHolder)
+            item?.let { holder.bind(it as UiModel.PhotoModel) }
+        else if (holder is AdBannerViewHolder)
+            item?.let { holder.bind(it as UiModel.AdBannerModel) }
+    }
 
-        override fun areContentsTheSame(oldItem: PhotoVM, newItem: PhotoVM) =
-            oldItem == newItem
+    inner class PhotoViewHolder(private val binding: PhotoItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: UiModel.PhotoModel) = with(binding) {
+            photo = item.photoVM
+        }
+    }
+
+    inner class AdBannerViewHolder(private val binding: AdBannerItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: UiModel.AdBannerModel) = with(binding) {
+            imageUrl = item.adImageUrl
+        }
+    }
+
+    object UiModelComparator : DiffUtil.ItemCallback<UiModel>() {
+        override fun areItemsTheSame(
+            oldItem: UiModel,
+            newItem: UiModel
+        ): Boolean {
+            val isSameRepoItem = oldItem is UiModel.PhotoModel
+                    && newItem is UiModel.PhotoModel
+                    && oldItem.photoVM.imageUrl == newItem.photoVM.imageUrl
+
+            val isSameSeparatorItem = oldItem is UiModel.AdBannerModel
+                    && newItem is UiModel.AdBannerModel
+                    && oldItem.adImageUrl == newItem.adImageUrl
+
+            return isSameRepoItem || isSameSeparatorItem
+        }
+
+        override fun areContentsTheSame(
+            oldItem: UiModel,
+            newItem: UiModel
+        ) = oldItem == newItem
     }
 }
 
-interface PhotoClickListener{
+interface PhotoClickListener {
 
 }

@@ -14,17 +14,15 @@ class PhotosViewModel(
 ) : ViewModel() {
 
     var photosLiveData: LiveData<PagingData<UiModel>> = loadPhotos()
+    var index = 0
 
     private fun loadPhotos() = photosRepository.loadPhotos().map { pagingData ->
         pagingData.map {
-            var index = 0
             UiModel.PhotoModel(mapToPhotoVM(it), ++index)
         }.insertSeparators { before, after ->
                 when {
                     before == null -> null
-                    before.index % 5 == 0 -> UiModel.AdBannerModel(
-                        "BETWEEN ITEMS $before AND $after"
-                    )
+                    before.index % 5 == 0 -> UiModel.AdBannerModel("https://farm66.static.flickr.com/65535/50397567507_855de8e6a9.jpg")
                     else -> null
                 }
             }

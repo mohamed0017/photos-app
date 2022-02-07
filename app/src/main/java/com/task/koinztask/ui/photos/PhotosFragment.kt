@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.task.koinztask.R
 import com.task.koinztask.ui.photos.adapter.PhotosAdapter
+import com.task.koinztask.ui.photos.adapter.PhotosLoadStateAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PhotosFragment : Fragment() {
@@ -35,16 +36,18 @@ class PhotosFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         val photosAdapter = PhotosAdapter()
-
         val rvPhotos = view?.findViewById<RecyclerView>(R.id.rvPhotos)
+
         rvPhotos?.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = photosAdapter
+            adapter = photosAdapter.withLoadStateHeaderAndFooter(
+                PhotosLoadStateAdapter(photosAdapter::retry),
+                PhotosLoadStateAdapter(photosAdapter::retry)
+            )
         }
-
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.photosLiveData.observe(viewLifecycleOwner, {
-                photosAdapter.submitData(lifecycle, it )
+                photosAdapter.submitData(lifecycle, it)
             })
         }
     }
