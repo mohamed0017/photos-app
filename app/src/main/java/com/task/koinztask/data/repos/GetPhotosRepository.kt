@@ -7,6 +7,7 @@ import androidx.paging.PagingData
 import com.task.koinztask.data.local.AppDatabase
 import com.task.koinztask.data.local.PhotoEntity
 import com.task.koinztask.data.mapper.PhotoMapper
+import com.task.koinztask.data.meditator.PhotosMediator
 import com.task.koinztask.data.remote.PhotosApi
 import kotlinx.coroutines.flow.Flow
 
