@@ -5,7 +5,6 @@ import androidx.room.Room
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.task.koinztask.data.local.AppDatabase
-import com.task.koinztask.data.local.PhotosCache
 import com.task.koinztask.data.mapper.PhotoMapper
 import com.task.koinztask.data.remote.PhotosApi
 import com.task.koinztask.data.repos.GetPhotosRepository

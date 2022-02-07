@@ -5,13 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.task.koinztask.R
+import com.task.koinztask.databinding.FragmentFullScreenPhotoBinding
 
 private const val IMAGE_URL_PARAM = "IMAGE_URL_PARAM"
 
 class FullScreenPhotoFragment : Fragment() {
 
     private var imageUrl: String? = null
+
+    private var _binding: FragmentFullScreenPhotoBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +27,8 @@ class FullScreenPhotoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_full_screen_photo, container, false)
+        _binding = FragmentFullScreenPhotoBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     companion object {
@@ -38,6 +42,11 @@ class FullScreenPhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.imageUrl = imageUrl
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

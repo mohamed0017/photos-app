@@ -1,4 +1,4 @@
-package com.task.koinztask.data.repos
+package com.task.koinztask.data.meditator
 
 import androidx.paging.*
 import com.task.koinztask.data.local.AppDatabase
@@ -6,10 +6,7 @@ import com.task.koinztask.data.local.PhotoEntity
 import com.task.koinztask.data.local.RemoteKeys
 import com.task.koinztask.data.mapper.PhotoMapper
 import com.task.koinztask.data.remote.PhotosApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.HttpException
 import java.io.IOException
 import java.io.InvalidObjectException
@@ -53,7 +50,7 @@ class PhotosMediator(
             keys?.let { appDatabase.remoteKeysDao().insertAll(it) }
             appDatabase.photosDao().insertAll(response.body()?.photos?.photo?.map {
                 photoMapper.map(it)
-            }!!)
+            } ?: emptyList())
 
             return MediatorResult.Success(endOfPaginationReached = isEndOfList == true)
         } catch (exception: IOException) {
@@ -76,16 +73,11 @@ class PhotosMediator(
                 remoteKeys?.nextKey?.minus(1) ?: DEFAULT_PAGE_INDEX
             }
             LoadType.APPEND -> {
-                val remoteKeys = getLastRemoteKey(state)
-                    ?: throw InvalidObjectException("Remote key should not be null for $loadType")
+                val remoteKeys = getLastRemoteKey(state) ?: return MediatorResult.Success(endOfPaginationReached = false)
                 remoteKeys.nextKey
             }
             LoadType.PREPEND -> {
-                val remoteKeys = getFirstRemoteKey(state)
-                    ?: throw InvalidObjectException("Invalid state, key should not be null")
-                //end of list condition reached
-                remoteKeys.prevKey ?: return MediatorResult.Success(endOfPaginationReached = true)
-                remoteKeys.prevKey
+                return MediatorResult.Success(endOfPaginationReached = true)
             }
         }
     }
@@ -97,16 +89,6 @@ class PhotosMediator(
         return state.pages
             .lastOrNull { it.data.isNotEmpty() }
             ?.data?.lastOrNull()
-            ?.let { photo -> appDatabase.remoteKeysDao().remoteKeysPhotoId(photo.id) }
-    }
-
-    /**
-     * get the first remote key inserted which had the data
-     */
-    private suspend fun getFirstRemoteKey(state: PagingState<Int, PhotoEntity>): RemoteKeys? {
-        return state.pages
-            .firstOrNull { it.data.isNotEmpty() }
-            ?.data?.firstOrNull()
             ?.let { photo -> appDatabase.remoteKeysDao().remoteKeysPhotoId(photo.id) }
     }
 

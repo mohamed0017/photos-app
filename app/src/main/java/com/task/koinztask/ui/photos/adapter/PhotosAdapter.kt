@@ -13,13 +13,7 @@ import com.task.koinztask.R
 import com.task.koinztask.databinding.AdBannerItemBinding
 import com.task.koinztask.ui.photos.UiModel
 
-@BindingAdapter("imageUrl")
-fun setImageUrl(view: ImageView, url: String?) {
-    Glide.with(view.context).load(url).placeholder(R.drawable.placeholder).into(view)
-}
-
-class PhotosAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiModelComparator) {
-    var photoClickListener: PhotoClickListener? = null
+class PhotosAdapter( private val onPhotoClicked: (url: String) -> Unit) : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiModelComparator) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -60,6 +54,9 @@ class PhotosAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiMode
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: UiModel.PhotoModel) = with(binding) {
             photo = item.photoVM
+            this.root.setOnClickListener {
+                item.photoVM.imageUrl?.let { it1 -> onPhotoClicked(it1) }
+            }
         }
     }
 
@@ -93,6 +90,7 @@ class PhotosAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiMode
     }
 }
 
-interface PhotoClickListener {
-   fun onPhotoCLicked(url : String)
+@BindingAdapter("imageUrl")
+fun setImageUrl(view: ImageView, url: String?) {
+    Glide.with(view.context).load(url).placeholder(R.drawable.placeholder).into(view)
 }

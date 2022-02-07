@@ -10,6 +10,9 @@ import com.task.koinztask.data.mapper.PhotoMapper
 import com.task.koinztask.data.remote.PhotosApi
 import kotlinx.coroutines.flow.Flow
 
+
+const val PAGE_SIZE = 20
+
 interface PhotosDataSource {
     fun loadPhotos(): Flow<PagingData<PhotoEntity>>
 }
@@ -25,7 +28,7 @@ class GetPhotosRepository(
         val pagingSourceFactory = { appDatabase.photosDao().getAll() }
 
         return Pager(
-            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false,initialLoadSize = PAGE_SIZE),
             pagingSourceFactory = pagingSourceFactory,
             remoteMediator = PhotosMediator(photosApi, appDatabase, photoMapper)
         ).flow

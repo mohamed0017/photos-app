@@ -13,8 +13,11 @@ import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.task.koinztask.R
+import com.task.koinztask.ui.fullscreenphoto.FullScreenPhotoFragment
 import com.task.koinztask.ui.photos.adapter.PhotosAdapter
 import com.task.koinztask.ui.photos.adapter.PhotosLoadStateAdapter
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PhotosFragment : Fragment() {
@@ -35,7 +38,7 @@ class PhotosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val photosAdapter = PhotosAdapter()
+        val photosAdapter = PhotosAdapter(this::onPhotoClicked)
         val rvPhotos = view.findViewById<RecyclerView>(R.id.rvPhotos)
 
         rvPhotos?.apply {
@@ -45,11 +48,19 @@ class PhotosFragment : Fragment() {
                 PhotosLoadStateAdapter(photosAdapter::retry)
             )
         }
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.photosLiveData.observe(viewLifecycleOwner, {
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.photosLiveData.collectLatest {
                 photosAdapter.submitData(lifecycle, it)
-            })
+            }
         }
+    }
+
+    private fun onPhotoClicked(url: String) {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.container, FullScreenPhotoFragment.newInstance(url))
+            .addToBackStack(FullScreenPhotoFragment::class.java.simpleName)
+            .commit()
     }
 
 }
