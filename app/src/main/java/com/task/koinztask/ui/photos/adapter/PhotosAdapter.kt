@@ -11,7 +11,6 @@ import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.task.koinztask.R
 import com.task.koinztask.databinding.AdBannerItemBinding
-import com.task.koinztask.ui.photos.PhotoVM
 import com.task.koinztask.ui.photos.UiModel
 
 @BindingAdapter("imageUrl")
@@ -20,7 +19,7 @@ fun setImageUrl(view: ImageView, url: String?) {
 }
 
 class PhotosAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiModelComparator) {
-    var characterClickListener: PhotoClickListener? = null
+    var photoClickListener: PhotoClickListener? = null
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -95,5 +94,5 @@ class PhotosAdapter : PagingDataAdapter<UiModel, RecyclerView.ViewHolder>(UiMode
 }
 
 interface PhotoClickListener {
-
+   fun onPhotoCLicked(url : String)
 }

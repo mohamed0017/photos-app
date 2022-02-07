@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.24583333333333332" />
         <entry key="app/src/main/res/layout/ad_banner_item.xml" value="0.24583333333333332" />
+        <entry key="app/src/main/res/layout/fragment_full_screen_photo.xml" value="0.16" />
         <entry key="app/src/main/res/layout/photo_item.xml" value="0.15" />
         <entry key="app/src/main/res/layout/photos_fragment.xml" value="0.24583333333333332" />
         <entry key="app/src/main/res/layout/rawlayout_loading_state.xml" value="0.24583333333333332" />

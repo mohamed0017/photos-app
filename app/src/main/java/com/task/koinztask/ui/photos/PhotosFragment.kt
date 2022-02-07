@@ -32,11 +32,11 @@ class PhotosFragment : Fragment() {
         return inflater.inflate(R.layout.photos_fragment, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val photosAdapter = PhotosAdapter()
-        val rvPhotos = view?.findViewById<RecyclerView>(R.id.rvPhotos)
+        val rvPhotos = view.findViewById<RecyclerView>(R.id.rvPhotos)
 
         rvPhotos?.apply {
             layoutManager = LinearLayoutManager(context)
